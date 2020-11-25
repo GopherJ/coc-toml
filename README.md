@@ -1,11 +1,13 @@
 # coc-toml
 
+<p class="warn"> ***WARNING*** taplo's structure is changed and waiting for its refactoring now, so my implementation is stopping now</p>
+
 toml lsp client extension for coc-nvim
 [taplo](https://github.com/tamasfe/taplo) is used to parse toml and [taplo-lsp](https://github.com/kkiyama117/taplo-lsp) is used as language-server
 
 ## ! Important
 
-This repo and package is alpha-version.
+This repo and package is under developing.
 
 There are some bugs, unimplemented features, and documents missing,
 though I'm making efforts to add them on it.
