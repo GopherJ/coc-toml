@@ -1,93 +1,75 @@
 import {
   commands,
+  CompleteResult,
   ExtensionContext,
   listManager,
   sources,
-  events,
-  LanguageClient,
-  ServerOptions,
-  services,
-  LanguageClientOptions,
   workspace,
 } from 'coc.nvim';
-import * as path from 'path';
-// import { registerCommands } from "./commands";
-// import { MessageWithOutput } from "./requestExt";
-import DemoList from './lists';
-import cocTomlAutoCmd from './auto_cmd';
-import sourceConfig from './toml_source_config';
-import getServerOptions from './configs/server_options';
-import getClientOptions from './configs/client_options';
+import { existsSync, mkdirSync } from 'fs';
+import { Config } from './config';
+import { Ctx } from './ctx';
+import * as cmd from './commands';
+import { downloadServer } from './downloader';
 
 export async function activate(context: ExtensionContext): Promise<void> {
-  // define variables
-  const { subscriptions, logger } = context;
-  const fileSchemaErrors = new Map<string, string>();
-  const config = workspace.getConfiguration().get('coc-toml') as any;
+  const config = new Config();
+  const ctx = new Ctx(context, config);
 
-  // Don't activate if disabled
-  if (!config.enabled) {
-    logger.log('configs.enabled: false');
-    workspace.showMessage(
-      'activate stopped because of: configs.enabled is false'
-    );
+  const serverRoot = context.storagePath;
+  if (!existsSync(serverRoot)) {
+    mkdirSync(serverRoot);
   }
 
-  // When opening buffer, get doc and find errors
-  events.on(
-    'BufEnter',
-    (bufnr) => {
-      const doc = workspace.getDocument(bufnr);
-      if (!doc) return;
-      const msg = fileSchemaErrors.get(doc.uri);
-      if (msg) workspace.showMessage(`Schema error: ${msg}`, 'warning');
-    },
-    null,
-    subscriptions
+  const bin = ctx.resolveBin();
+  if (!bin) {
+    let msg = 'taplo binary is not found, download from GitHub?';
+    let ret = 0;
+    if (config.prompt) {
+      ret = await workspace.showQuickpick(['Yes', 'Cancel'], msg);
+    }
+    if (ret === 0) {
+      try {
+        await downloadServer(context);
+      } catch (e) {
+        console.error(e);
+        msg =
+          'Download taplo failed, you can get it from https://github.com/kkiyama117/coc-toml';
+        workspace.showMessage(msg, 'error');
+        return;
+      }
+    } else {
+      return;
+    }
+  }
+  ctx.registerCommand('tomlToJson', cmd.tomlToJson);
+  ctx.registerCommand('syntaxTree', cmd.syntaxTree);
+  ctx.registerCommand('upgrade', cmd.upgrade);
+  ctx.registerCommand('serverVersion', cmd.serverVersion);
+  ctx.registerCommand('resolveCodeAction', cmd.resolveCodeAction);
+  ctx.registerCommand(
+    'applySnippetWorkspaceEdit',
+    cmd.applySnippetWorkspaceEditCommand
   );
+  ctx.registerCommand('reload', (ctx) => {
+    return async () => {
+      workspace.showMessage(`Reloading taplo-lsp...`);
 
-  // Create the language client and start the client.
-  const serverPath = path.resolve(
-    context.asAbsolutePath(path.join('lib', 'server.js'))
-  );
-  // Options to control the language server
-  const serverOptions: ServerOptions = getServerOptions(serverPath);
-  // Options to control the language client
-  const clientOptions: LanguageClientOptions = getClientOptions(
-    config,
-    fileSchemaErrors
-  );
+      for (const sub of ctx.subscriptions) {
+        try {
+          sub.dispose();
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
-  // Create client for toml
-  const client = new LanguageClient(
-    'toml',
-    'toml language server',
-    serverOptions,
-    clientOptions
-  );
+      await activate(context);
 
-  // Push the disposable to the context's subscriptions so that the
-  // client can be deactivated on extension deactivation
-  context.subscriptions.push(services.registLanguageClient(client));
-  client.onReady().then(() => {
-    // WIP, get schema
+      workspace.showMessage(`Reloaded taplo-lsp`);
+    };
   });
 
-  // show loading status.
-  const statusItem = workspace.createStatusBarItem(0, { progress: true });
-  subscriptions.push(statusItem);
-
-  context.subscriptions.push(
-    commands.registerCommand('coc-toml.Command', async () => {
-      workspace.showMessage(`coc-toml Commands works!`);
-    }),
-
-    listManager.registerList(new DemoList(workspace.nvim)),
-
-    // add source completions
-    sources.createSource(sourceConfig),
-
-    // add autocmd
-    workspace.registerAutocmd(cocTomlAutoCmd(workspace))
-  );
+  await ctx.startServer();
+  await ctx.checkUpdate();
+  // activateInlayHints(ctx);
 }

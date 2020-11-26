@@ -74,11 +74,6 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@taplo/lib@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@taplo/lib/-/lib-0.1.4.tgz#ec85d89d9f0c5b2f0513c570a49dd8d38457a275"
-  integrity sha512-KFevdIl8d8v+e8CeCMV6BpWw3Nmg1ms9eEd8QjWgDgvkmsEVsJnGpJro8R1UMIEWiQHqahMf7k5ecusT6uoeaw==
-
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -1143,6 +1138,13 @@ execa@^4.1.0:
     signal-exit "^3.0.2"
     strip-final-newline "^2.0.0"
 
+executable@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/executable/-/executable-4.1.1.tgz#41532bff361d3e57af4d763b70582db18f5d133c"
+  integrity sha512-8iA79xD3uAch729dUG8xaaBBFGaEa0wdD2VkYLFHwlqosEj/jT66AzcreRDSgV7ehnNLBW2WR5jIXwGKjVdTLg==
+  dependencies:
+    pify "^2.2.0"
+
 fast-deep-equal@^3.1.1:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
@@ -2109,6 +2111,11 @@ pidtree@^0.3.0:
   resolved "https://registry.yarnpkg.com/pidtree/-/pidtree-0.3.1.tgz#ef09ac2cc0533df1f3250ccf2c4d366b0d12114a"
   integrity sha512-qQbW94hLHEqCg7nhby4yRC7G2+jYHY4Rguc2bjw7Uug4GIJuu1tvf2uHaZv5Q8zdt+WKJ6qK1FOI6amaWUo5FA==
 
+pify@^2.2.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
+  integrity sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
+
 pify@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
@@ -2596,14 +2603,6 @@ tapable@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.1.1.tgz#b01cc1902d42a7bb30514e320ce21c456f72fd3f"
   integrity sha512-Wib1S8m2wdpLbmQz0RBEVosIyvb/ykfKXf3ZIDqvWoMg/zTNm6G/tDSuUM61J1kNCDXWJrLHGSFeMhAG+gAGpQ==
-
-taplo-lsp@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/taplo-lsp/-/taplo-lsp-0.1.5.tgz#12e42a6c1a6f7385da2fc4808e3b4b37230bd46c"
-  integrity sha512-T6lGer7GKd4QMojKuptOUVdYwqHD4qjBhxVNhWOnyoEOo0SWPpqlmlCdxMPrByyDhdmdICBkEZXDATDuBT1eDg==
-  dependencies:
-    node-fetch "^2.6.1"
-    vscode-languageclient "^6.1.3"
 
 tar@^6.0.2, tar@^6.0.5:
   version "6.0.5"
