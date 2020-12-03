@@ -19,9 +19,11 @@ import * as lsp from './lsp_ext';
 class ExperimentalFeatures implements StaticFeature {
   fillClientCapabilities(capabilities: ClientCapabilities): void {
     const caps: any = capabilities.experimental ?? {};
+    caps.codeActionGroup = true;
+    caps.hoverActions = true;
     caps.snippetTextEdit = false;
-    caps.resolveCodeAction = false;
-    caps.statusNotification = false;
+    caps.resolveCodeAction = true;
+    caps.statusNotification = true;
     capabilities.experimental = caps;
   }
   initialize(): void {}
@@ -37,7 +39,6 @@ function isCodeActionWithoutEditsAndCommands(value: any): boolean {
     candidate.command === void 0
   );
 }
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function createClient(bin: string, args: string[]): LanguageClient {
   let folder = '.';

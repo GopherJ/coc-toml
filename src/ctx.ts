@@ -62,13 +62,20 @@ export class Ctx {
       return;
     }
     const client = createClient(bin, args);
+    // TODO: Enable retry and optimization
+    this.statusBar.text = `Register services...`;
+    this.statusBar.show();
     this.extCtx.subscriptions.push(services.registLanguageClient(client));
-    // TODO: Enable retry
+    await this.sleep(8000);
+    this.statusBar.text = `taplo ...`;
+    this.statusBar.show();
     await client.onReady();
+    await this.sleep(2000);
+    this.statusBar.hide();
 
     client.onNotification(lsp.updateBuiltInSchemas, async (params) => {
-      const assosiations = params.associations;
-      this.statusBar.text = `taplo ${assosiations}`;
+      const associations = params.associations;
+      this.statusBar.text = `taplo ${associations}`;
       this.statusBar.show();
     });
     this.client = client;
@@ -105,7 +112,6 @@ export class Ctx {
     }
 
     return bin;
-    // return '/home/kiyama/.config/coc/extensions/coc-toml-data/taplo-lsp2';
   }
 
   // check update is available on github
