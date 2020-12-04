@@ -283,7 +283,7 @@
         "coc-toml.updates.prompt": {
           "type": "boolean",
           "default": true,
-          "description": "Prompt the user before downloading rust-analyzer",
+          "description": "Prompt the user before downloading taplo binary",
           "scope": "resource"
         },
         "coc-toml.serverPath": {

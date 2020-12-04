@@ -1,4 +1,5 @@
 import {
+  ClientState,
   commands,
   ExtensionContext,
   LanguageClient,
@@ -19,7 +20,6 @@ import { existsSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 import which from 'which';
-import * as lsp from './lsp_ext';
 
 import { createClient } from './client';
 import { Config } from './config';
@@ -38,6 +38,7 @@ export type Cmd = (...args: any[]) => unknown;
 export class Ctx {
   client!: LanguageClient;
   private readonly statusBar: StatusBarItem;
+
   // private statusBar: StatusBarItem;
 
   constructor(
@@ -66,18 +67,20 @@ export class Ctx {
     this.statusBar.text = `Register services...`;
     this.statusBar.show();
     this.extCtx.subscriptions.push(services.registLanguageClient(client));
-    await this.sleep(8000);
-    this.statusBar.text = `taplo ...`;
-    this.statusBar.show();
-    await client.onReady();
-    await this.sleep(2000);
-    this.statusBar.hide();
 
-    client.onNotification(lsp.updateBuiltInSchemas, async (params) => {
-      const associations = params.associations;
-      this.statusBar.text = `taplo ${associations}`;
-      this.statusBar.show();
-    });
+    this.statusBar.text = `Waiting taplo...`;
+    this.statusBar.show();
+    await this.sleep(5000);
+    await client.onReady();
+    console.error('OK');
+    this.statusBar.hide();
+    // @ts-ignore: onReady always not stopped
+
+    // client.onNotification(lsp.updateBuiltInSchemas, async (params) => {
+    //   const associations = params.associations;
+    //   this.statusBar.text = `taplo ${associations}`;
+    //   this.statusBar.show();
+    // });
     this.client = client;
   }
 

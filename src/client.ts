@@ -1,4 +1,5 @@
 import {
+  ErrorAction,
   Executable,
   LanguageClient,
   LanguageClientOptions,
@@ -15,6 +16,7 @@ import {
   Command,
 } from 'vscode-languageserver-protocol';
 import * as lsp from './lsp_ext';
+import { serverProcessGenerator } from './server';
 
 class ExperimentalFeatures implements StaticFeature {
   fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -51,6 +53,7 @@ export function createClient(bin: string, args: string[]): LanguageClient {
     options: { cwd: folder },
   };
 
+  // const serverOptions: ServerOptions = serverProcessGenerator(run);
   const serverOptions: ServerOptions = run;
   const outputChannel = workspace.createOutputChannel(
     'taplo Language Server Trace'
@@ -129,25 +132,8 @@ export function createClient(bin: string, args: string[]): LanguageClient {
     serverOptions,
     clientOptions
   );
-  // HACK: This is an awful way of filtering out the decorations notifications
-  // However, pending proper support, this is the most effecitve approach
-  // Proper support for this would entail a change to vscode-languageclient to allow not notifying on certain messages
-  // Or the ability to disable the serverside component of highlighting (but this means that to do tracing we need to disable hihlighting)
-  // This also requires considering our settings strategy, which is work which needs doing
-  // @ts-ignore The tracer is private to vscode-languageclient, but we need access to it to not log publishDecorations requests
-  client._tracer = {
-    log: (messageOrDataObject: string | unknown, data?: string) => {
-      if (typeof messageOrDataObject === 'string') {
-        // @ts-ignore This is just a utility function
-        client.logTrace(messageOrDataObject, data);
-      } else {
-        // @ts-ignore
-        client.logObjectTrace(messageOrDataObject);
-      }
-    },
-  };
-  client.registerProposedFeatures();
-  client.registerFeature(new ExperimentalFeatures());
+  // client.registerProposedFeatures();
+  // client.registerFeature(new ExperimentalFeatures());
 
   return client;
 }
